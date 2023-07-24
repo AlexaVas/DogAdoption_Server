@@ -9,14 +9,30 @@ require("./db");
 // https://www.npmjs.com/package/express
 const express = require("express");
 
+const bodyParser = require("body-parser");
+
  
 
 const { isAuthenticated } = require("./middleware/jwt.middleware");
 
 const app = express();
 
+///////////////////////////////////
+// Set the limit to 5MB (you can adjust this value based on your needs)
+const bodyParserLimit = '5mb';
+
+// Parse incoming requests with JSON payloads
+app.use(bodyParser.json({ limit: bodyParserLimit }));
+
+// Parse incoming requests with URL-encoded payloads
+app.use(bodyParser.urlencoded({ limit: bodyParserLimit, extended: true }));
+///////////////////////////////////
+
+
+
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
+
 
 // 👇 Start handling routes here
 const indexRoutes = require("./routes/index.routes");

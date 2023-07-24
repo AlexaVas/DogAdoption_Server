@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
 const Shelter = require("../models/Shelter.model")
+const libphonenumber = require("google-libphonenumber");
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 const router = express.Router();
 const { isAuthenticated } = require("./../middleware/jwt.middleware.js");
@@ -156,6 +158,33 @@ router.post("/signup/shelter", (req, res, next) => {
     return;
   }
 
+  // if (phone === String || phone.toString().length < 8 || phone.includes(String)){
+
+  //   res
+  //     .status(400)
+  //     .json({
+  //       message: `${phone} is not a correct phone number.`,
+  //     });
+  //   return;
+  // }
+
+  try {
+    const phoneNumber = phoneUtil.parseAndKeepRawInput(phone, "INTERNATIONAL");
+    const isValid = phoneUtil.isValidNumber(phoneNumber);
+    if (!isValid) {
+      res.status(400).json({
+        message: `${phone} is not a correct phone number.`,
+      });
+      return;
+    }
+  } catch (error) {
+    // The `parseAndKeepRawInput` function can throw an error for invalid input
+    res.status(400).json({
+      message: `${phone} is not a correct phone number.`,
+    });
+    return;
+  }
+
   // Use regex to validate the password format
   const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
   if (!passwordRegex.test(password)) {
@@ -196,11 +225,11 @@ router.post("/signup/shelter", (req, res, next) => {
        const user = { email, name, _id };
 
        // Send a json response containing the user object
-       res.status(201).json({ user: user });
+       res.status(201).json({ "user": user });
      })
      .catch((err) => {
        console.log(err);
-       res.status(500).json({ message: "Internal Server Error" });
+       res.status(500).json({ message: "Invalid data, check if your details are correct." });
      }); 
 
 });
@@ -237,10 +266,10 @@ router.post("/login/shelter", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email, name } = foundShelter;
+        const { _id, email, name, location } = foundShelter;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, name, userType: "shelter"};
+        const payload = { _id, email, name, userType: "shelter", location };
 
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
@@ -256,7 +285,11 @@ router.post("/login/shelter", (req, res, next) => {
         res.status(401).json({ message: "Invalid login details." });
       }
     })
-    .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ message: "Invalid data, check if your details are correct." })
+    );
 });
 
 

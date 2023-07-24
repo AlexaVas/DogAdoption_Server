@@ -7,11 +7,13 @@ const dogSchema = new Schema({
   name: String,
   breed: String,
   age: String,
+  shelterName: String,
   shelter: { type: Schema.Types.ObjectId, ref: "Shelter" },
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+  user: [{ type: Schema.Types.ObjectId, ref: "User" }],
   description: String,
   image: String,
   phone: Number,
+  location: String
 });
 
 module.exports = model("Dog", dogSchema);

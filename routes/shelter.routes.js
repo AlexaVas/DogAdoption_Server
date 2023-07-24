@@ -9,18 +9,38 @@ const Dog = require("../models/Dog.model");
 const {isAuthenticated} = require("../middleware/jwt.middleware.js")
 
 
-//////  POST /shelter/profile  -  Creates a new ////////////////////////
+//////  POST /shelter/profile  -  Creates a new dog////////////////////////
 
 router.post("/profile", (req, res, next) => {
-  const { name, breed, age, phone, image, description, profileId } = req.body;
-  Dog.create({ name, breed, age, phone, image, description, shelter: profileId })
-    .then((newDog) => {
-       return Shelter.findByIdAndUpdate(profileId, {
-        $push: { dogs: newDog._id }, new: true
-      })
+  const {
+    name,
+    breed,
+    age,
+    phone,
+    image,
+    description,
+    profileId,
+    shelterName,
+    shelterLocation,
+  } = req.body;
+  Dog.create({
+    name,
+    breed,
+    age,
+    phone,
+    image,
+    description,
+    shelter: profileId,
+    shelterName,
+    location: shelterLocation,
+  }).then((newDog) => {
+    return Shelter.findByIdAndUpdate(profileId, {
+      $push: { dogs: newDog._id },
+      new: true,
+    })
       .then((resp) => console.log(resp))
       .catch((err) => res.json(err));
-    });
+  });
 
 });
 
@@ -42,7 +62,9 @@ router.get("/listings/:dogId", isAuthenticated, (req, res, next) => {
   const { dogId } = req.params;
 
   Dog.findById(dogId)
-    .then((alldogs) => res.json(alldogs))
+    .then((alldogs) => {
+      console.log(alldogs);
+      return res.status(200).json(alldogs)})
     .catch((err) => res.json(err));
 });
 
@@ -58,7 +80,7 @@ router.delete("/listings/:dogId", isAuthenticated, (req, res, next) => {
 
   Dog.findByIdAndRemove(dogId)
     .then(() =>
-      res.json({
+      res.status(200).json({
         message: `Dog with ${dogId} is removed successfully.`,
       })
     )
@@ -78,7 +100,7 @@ if (!mongoose.Types.ObjectId.isValid(dogId)) {
   }
 
     Dog.findByIdAndUpdate(dogId, req.body, { new: true })
-      .then((updatedDog) => res.json(updatedDog))
+      .then((updatedDog) => res.status(200).json(updatedDog))
       .catch((error) => res.json(error));
 
 
