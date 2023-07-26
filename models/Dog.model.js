@@ -12,7 +12,7 @@ const dogSchema = new Schema({
   user: [{ type: Schema.Types.ObjectId, ref: "User" }],
   description: String,
   image: String,
-  phone: Number,
+  phone: String,
   location: String
 });
 
