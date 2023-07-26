@@ -24,7 +24,7 @@ router.post("/", (req, res, next) => {
     .then((data) => {
       console.log(data.breed, data.apartment, data.exp, data.active);
 
-      const userInfo = `I live in an ${data.apartment} and I am ${data.active}. Should I adopt a ${data.breed} from a shelter? Level of my experience with dogs: ${exp}. Pls, give me 7 lines long answer.`;
+      const userInfo = `I live in an ${data.apartment} and I am ${data.active}. Would I make a good potential owner for a ${data.breed} from a shelter? Level of my experience with dogs: ${exp}. Please, give me 550 characters long answer.`;
 
       options.data[0].content = userInfo;
       options.url = "https://chatgpt-api8.p.rapidapi.com/";
