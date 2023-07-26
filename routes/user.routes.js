@@ -22,8 +22,16 @@ router.post("/dog-list/:dogId", isAuthenticated, (req, res, next) => {
   const { dogId } = req.params;
   const userId = req.payload._id;
 
+  User.findOne({ _id: userId, favorites: dogId })
+  
+  .then((dogFound) => {
+    // If the user with the same email already exists, send an error response
+    if (dogFound) {
+      return res.status(400).json({ error: "Dog already in favorites." });
+    } else{ 
+      
+      Promise.all([
 
-  Promise.all([
     User.findByIdAndUpdate(
       userId,
       { $push: { favorites: dogId } },
@@ -37,13 +45,22 @@ router.post("/dog-list/:dogId", isAuthenticated, (req, res, next) => {
       );
       res.json({ message: "Dog added to favorites successfully." });
     })
+      .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: "Something went wrong." });
+    });
+  }})
+
     .catch((err) => {
       console.error(err);
       res.status(500).json({ error: "Something went wrong." });
     });
+
+
+
 });
 
-
+     
 
 
 router.get("/profile", isAuthenticated, (req, res, next) => {
