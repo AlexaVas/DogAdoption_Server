@@ -11,7 +11,7 @@ const dogSchema = new Schema({
   shelter: { type: Schema.Types.ObjectId, ref: "Shelter" },
   user: [{ type: Schema.Types.ObjectId, ref: "User" }],
   description: String,
-  image: String,
+  image: Array,
   phone: String,
   location: String
 });
