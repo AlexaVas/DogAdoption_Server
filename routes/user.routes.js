@@ -101,7 +101,26 @@ router.delete("/profile/:dogId", isAuthenticated, (req, res, next) => {
 
 
 
- 
+//////////////////Get Shelter Details/////////
+
+
+
+// router.get("shelter-details/:shelterId",(req,res)=> {
+
+// const {userId} = req.params;
+
+// User.findById(userId)
+// .then((result)=>{console.log(result)})
+// .catch((err)=>{
+//   res.status(500).json("Something went worong", err)
+// });
+
+
+
+// })
+
+
+///////////////////////////////////////////
 
 
 
